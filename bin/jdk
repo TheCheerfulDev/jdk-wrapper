@@ -9,7 +9,7 @@ reset="$(tput sgr0)"
 red="$(tput setaf 1)"
 green="$(tput setaf 2)"
 
-JDK_APP_VERSION="2.0.1"
+JDK_APP_VERSION="2.0.2"
 JDK_CONFIG_HOME="${HOME}/.config/jdk2"
 JDK_JAVA_HOME="${JDK_CONFIG_HOME}/candidates"
 
@@ -30,7 +30,7 @@ function completion() {
   done
   DIR=$(cd -P "$(dirname "$SOURCE")" >/dev/null 2>&1 && pwd)
 
-  cat ${DIR}/jdk-completion.sh
+  cat ${DIR}/../libexec/bin/jdk-completion.sh
 
   exit 0
 }

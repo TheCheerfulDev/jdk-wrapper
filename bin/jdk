@@ -9,7 +9,7 @@ reset="$(tput sgr0)"
 red="$(tput setaf 1)"
 green="$(tput setaf 2)"
 
-JDK_APP_VERSION="2.0.2"
+JDK_APP_VERSION="2.0.3"
 JDK_CONFIG_HOME="${HOME}/.config/jdk2"
 JDK_JAVA_HOME="${JDK_CONFIG_HOME}/candidates"
 
@@ -70,32 +70,39 @@ function install_jdk() {
   # Download the JDK
   echo "[${green}INFO${reset}] Downloading JDK ${version} from ${url}"
   wget --output-document="${JDK_JAVA_HOME}/${version}.tar.gz" --quiet --show-progress "${url}"
-  # Extract the JDK
-  mkdir -p "${JDK_JAVA_HOME}/${version}/${version}.jdk" && tar xf "${JDK_JAVA_HOME}/${version}.tar.gz" -C "${JDK_JAVA_HOME}/${version}/${version}.jdk" --strip-components 1
 
-  # Check if OS is linux or mac
-  if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    # Set path_substring for linux
-    local path_substring=".jdk/"
-  elif [[ "$OSTYPE" == "darwin"* ]]; then
-    # Set path_substring for mac
-    local path_substring=".jdk/Contents/Home/"
+  # Check if url contains zulu
+  if [[ "${url}" == *"zulu"* ]]; then
+    mkdir -p "${JDK_JAVA_HOME}/${version}" && tar xf "${JDK_JAVA_HOME}/${version}.tar.gz" -C "${JDK_JAVA_HOME}/${version}" --strip-components 1
+  else
+
+    # Extract the JDK
+    mkdir -p "${JDK_JAVA_HOME}/${version}/${version}.jdk" && tar xf "${JDK_JAVA_HOME}/${version}.tar.gz" -C "${JDK_JAVA_HOME}/${version}/${version}.jdk" --strip-components 1
+
+    # Check if OS is linux or mac
+    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+      # Set path_substring for linux
+      local path_substring=".jdk/"
+    elif [[ "$OSTYPE" == "darwin"* ]]; then
+      # Set path_substring for mac
+      local path_substring=".jdk/Contents/Home/"
+    fi
+
+    # Create a symlink to the JDK
+    ln -s "${JDK_JAVA_HOME}/${version}/${version}${path_substring}DISCLAIMER" "${JDK_JAVA_HOME}/${version}/DISCLAIMER"
+    ln -s "${JDK_JAVA_HOME}/${version}/${version}${path_substring}Welcome.html" "${JDK_JAVA_HOME}/${version}/Welcome.html"
+    ln -s "${JDK_JAVA_HOME}/${version}/${version}${path_substring}bin" "${JDK_JAVA_HOME}/${version}/bin"
+    ln -s "${JDK_JAVA_HOME}/${version}/${version}${path_substring}conf" "${JDK_JAVA_HOME}/${version}/conf"
+    ln -s "${JDK_JAVA_HOME}/${version}/${version}${path_substring}demo" "${JDK_JAVA_HOME}/${version}/demo"
+    ln -s "${JDK_JAVA_HOME}/${version}/${version}${path_substring}include" "${JDK_JAVA_HOME}/${version}/include"
+    ln -s "${JDK_JAVA_HOME}/${version}/${version}${path_substring}jmods" "${JDK_JAVA_HOME}/${version}/jmods"
+    ln -s "${JDK_JAVA_HOME}/${version}/${version}${path_substring}legal" "${JDK_JAVA_HOME}/${version}/legal"
+    ln -s "${JDK_JAVA_HOME}/${version}/${version}${path_substring}lib" "${JDK_JAVA_HOME}/${version}/lib"
+    ln -s "${JDK_JAVA_HOME}/${version}/${version}${path_substring}man" "${JDK_JAVA_HOME}/${version}/man"
+    ln -s "${JDK_JAVA_HOME}/${version}/${version}${path_substring}readme.txt" "${JDK_JAVA_HOME}/${version}/readme.txt"
+    ln -s "${JDK_JAVA_HOME}/${version}/${version}${path_substring}release" "${JDK_JAVA_HOME}/${version}/release"
+
   fi
-
-  # Create a symlink to the JDK
-  ln -s "${JDK_JAVA_HOME}/${version}/${version}${path_substring}DISCLAIMER" "${JDK_JAVA_HOME}/${version}/DISCLAIMER"
-  ln -s "${JDK_JAVA_HOME}/${version}/${version}${path_substring}Welcome.html" "${JDK_JAVA_HOME}/${version}/Welcome.html"
-  ln -s "${JDK_JAVA_HOME}/${version}/${version}${path_substring}bin" "${JDK_JAVA_HOME}/${version}/bin"
-  ln -s "${JDK_JAVA_HOME}/${version}/${version}${path_substring}conf" "${JDK_JAVA_HOME}/${version}/conf"
-  ln -s "${JDK_JAVA_HOME}/${version}/${version}${path_substring}demo" "${JDK_JAVA_HOME}/${version}/demo"
-  ln -s "${JDK_JAVA_HOME}/${version}/${version}${path_substring}include" "${JDK_JAVA_HOME}/${version}/include"
-  ln -s "${JDK_JAVA_HOME}/${version}/${version}${path_substring}jmods" "${JDK_JAVA_HOME}/${version}/jmods"
-  ln -s "${JDK_JAVA_HOME}/${version}/${version}${path_substring}legal" "${JDK_JAVA_HOME}/${version}/legal"
-  ln -s "${JDK_JAVA_HOME}/${version}/${version}${path_substring}lib" "${JDK_JAVA_HOME}/${version}/lib"
-  ln -s "${JDK_JAVA_HOME}/${version}/${version}${path_substring}man" "${JDK_JAVA_HOME}/${version}/man"
-  ln -s "${JDK_JAVA_HOME}/${version}/${version}${path_substring}readme.txt" "${JDK_JAVA_HOME}/${version}/readme.txt"
-  ln -s "${JDK_JAVA_HOME}/${version}/${version}${path_substring}release" "${JDK_JAVA_HOME}/${version}/release"
-
   # Remove the downloaded tarball
   rm "${JDK_JAVA_HOME}/${version}.tar.gz"
 
